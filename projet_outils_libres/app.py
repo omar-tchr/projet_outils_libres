@@ -43,6 +43,11 @@ def logout():
     return redirect(url_for('home'))
 
 
+@app.route("/sign/")
+def sign():
+    return render_template('sign.html')
+
+
 @app.route('/chat')
 def chat():
     username = request.args.get('username')
