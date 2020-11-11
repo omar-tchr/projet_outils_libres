@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title><%= title %></title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>/*styling of chat panel body*/
+h4 {text-align: center;}
+
+.body{
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 50px;
+  text-align: center;
+  align-items: center;
+}
+
+.bodyChat{
+  background-color: #ffffff9f;
+  color: #000000;
+  font-size: 16px;
+  text-align: center;
+  align-items: center;
+  background-attachment: fixed;
+  background-position: center;
+}
+.badge{
+  background-color: #FFFFFF;
+}
+#userBtn{
+  margin-bottom: 5px;
+}
+
+.panel-default{
+  box-shadow: 0 0 30px darkslategray;
+}
+
+.login-screen{
+  background-color: #FFFFFF;
+
+}
+
+.login-box{
+  margin: auto;
+  margin-top: 3%;
+  width: 50%;
+  border: 20px solid #0000001e
+  border-radius: 15px ;
+  background-color: rgb(211,211,211)
+}
+
+
+.login-form,
+.product-form{
+  width: 90%;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+.input-block{
+  margin: auto;
+  margin-bottom: 20px;
+}
+
+.input-block p{
+  text-align: center;
+  font-weight: bold;
+}
+
+.input-icon{
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+  color: #8b919900;
+  background-color: #ffffff;
+}
+
+.input-box{
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+  width: 75%;
+  border: 0;
+  background-color: #ffffff;
+  box-shadow: none;
+}
+/*styling of chat panel body*/
+
+
+#panel2{
+  height: 380px;
+  overflow-y: auto;
+}
+
+.input-box-send{
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+  width: 75%;
+  border: 1px solid #a9a9a9;
+  background-color: #ffffff;
+  box-shadow: none;
+}
+
+
+#messages{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 10px;}
+
+  #list{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 5px;
+}
+#messages li{
+  text-align: left;
+  width: 100%;
+  background: #c0c0c01a;
+  padding: 0px;
+  margin: 1px;
+  border-radius: 1px;
+}
+
+#list li{
+  text-align: left;
+  width: 100%;
+  background: #c0c0c07c;
+  padding: 0px;
+  margin: 5px;
+  border-radius: 5px;
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+            <a class="navbar-brand" href=""> Ichat App </a>
+            </div>
+            <ul class="nav navbar-nav">
+            <li> <a href=""><span class="glyphicon glyphicon-home"></span> Home</a> </li>
+            <li><a href="">Chat</a></li>
+            </ul>
+             <ul class="nav navbar-nav navbar-right">
+
+                  <li><a href="#"><b> {{ username }} </b></a></li>
+                  <li><a href="/chat"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+
+            </ul>
+        </div>
+    </nav>
+    <h3> Welcome to chat room number: {{ room }}</h3>
+
+    <div class="w3-row  w3-grey w3-mobile"style="position: absolute;height:90%; width:100%;">
+        <div class="col-sm-8">
+            </br>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <h4 id="frndName">Discussions</h4>
+                </div>
+                <div class="panel-body" id="panel2">
+                <ul id="messages">
+
+                </ul>
+                </div>
+                <div class="panel-footer">
+                    <form id="message_input_form">
+                        <span class="input-box"><i class="glyphicon glyphicon-edit"></i></span>
+                        <input id="message_input" class="input-box-send" autocomplete="off" placeholder="Write a message...">
+                        <button id="sendBtn" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> <b>Send</b></button>
+                    </form>
+                </div>
+          </div>
+        </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script>
+    const socket = io.connect("http://127.0.0.1:5000");
+
+    socket.on('connect', function () {
+        socket.emit('join_room', {
+            username: "{{ username }}",
+            room: "{{ room }}"
+        });
+
+        let message_input = document.getElementById('message_input');
+
+        document.getElementById('message_input_form').onsubmit = function (e) {
+            e.preventDefault();
+            let message = message_input.value.trim();
+            if (message.length) {
+                socket.emit('send_message', {
+                    username: "{{ username }}",
+                    room: "{{ room }}",
+                    message: message
+                })
+            }
+            message_input.value = '';
+            message_input.focus();
+        }
+    });
+
+    window.onbeforeunload = function () {
+        socket.emit('leave_room', {
+            username: "{{ username }}",
+            room: "{{ room }}"
+        })
+    };
+
+    socket.on('receive_message', function (data) {
+        console.log(data);
+        const newNode = document.createElement('div');
+        newNode.innerHTML = `<b>${data.username}:&nbsp;</b> ${data.message}`;
+        document.getElementById('messages').appendChild(newNode);
+    });
+
+    socket.on('join_room_announcement', function (data) {
+        console.log(data);
+        if (data.username !== "{{ username }}") {
+            const newNode = document.createElement('div');
+            newNode.innerHTML = `<b>${data.username}</b> has joined the room`;
+            document.getElementById('messages').appendChild(newNode);
+        }
+    });
+
+    socket.on('leave_room_announcement', function (data) {
+        console.log(data);
+        const newNode = document.createElement('div');
+        newNode.innerHTML = `<b>${data.username}</b> has left the room`;
+        document.getElementById('messages').appendChild(newNode);
+    });
+</script>
+</html>
