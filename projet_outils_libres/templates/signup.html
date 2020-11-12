@@ -115,28 +115,31 @@
     p {text-align: center}
   </style>
 
+
       <div class="login-box">
-          <h2 class= "solid"> <b>CONNECTION</b></h2>
+          <h2 class= "solid"> <b>REGISTRATION</b></h2>
           <br>
           <h3>{{ message }}</h3>
-          <form action="/chat">
+          <form action="/login">
               <div class="input-block">
                   <span class="input-box"><i class="glyphicon glyphicon-user"></i></span>
-                  <input id="uname" type="text" name="username" placeholder="Insert your username" required/>
+                  <input id="uname" type="text" name="username" placeholder="Insert your username"  required/>
               </div>
               <div class="input-block">
-                  <span class="input-box"><i class="glyphicon glyphicon-globe"></i></span>
-                  <input id="password" type="text" name="password" placeholder="Type your password" required/>
+                  <span class="input-box"><i class="glyphicon glyphicon-envelope"></i></span>
+                  <input id="email" type="text" name="email" placeholder="Insert your Email" required/>
               </div>
               <div class="input-block">
-                  <span class="input-box"><i class="glyphicon glyphicon-globe"></i></span>
-                  <input id="number" type="text" name="room" placeholder="Type the chat room number" required/>
+                  <span class="input-box"><i class="glyphicon glyphicon-lock"></i></span>
+                  <input id="password" type="password" name="password" placeholder="Type your password" required/>
               </div>
-              <button class="btn btn-success btn-lg btn-block" type="submit" name="submit"><b>Login</b></button><br>
-               <p><b>Not registered?</b> </p>
-                <a href="/signup"  class="btn btn-danger btn-lg btn-block"><b>Register here</b></a><br>
+              <button class="btn btn-danger btn-lg btn-block" type="submit" name="submit"><b>register</b></button><br>
+              <p><b>Are you already a member?</b> </p>
+              <a href="/login"  class="btn btn-success btn-lg btn-block"><b>connect here</b></a><br>
+
           </form>
       </div>
- </main>
+  </main>
 </body>
 </html>
+

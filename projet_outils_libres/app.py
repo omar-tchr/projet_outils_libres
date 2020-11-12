@@ -1,11 +1,13 @@
+
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import current_user, login_user, login_required, logout_user, LoginManager
 from flask_socketio import SocketIO, join_room, leave_room
-
-from db import get_user
+from pymongo.errors import DuplicateKeyError
+from datetime import datetime
+from db import get_user, save_user
 
 app = Flask(__name__)
-app.secret_key = "sfdjkafnk"
+app.secret_key = "Hugo1996"
 socketio = SocketIO(app)
 login_manager = LoginManager()
 login_manager.login_view = 'login'
@@ -14,14 +16,13 @@ login_manager.init_app(app)
 
 @app.route('/')
 def home():
-    return render_template("index.html")
+    return render_template("login.html")
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
-
+        return redirect(url_for('chat'))
     message = ''
     if request.method == 'POST':
         username = request.form.get('username')
@@ -30,10 +31,29 @@ def login():
 
         if user and user.check_password(password_input):
             login_user(user)
-            return redirect(url_for('home'))
+            return redirect(url_for('chat'))
         else:
-            message = 'Failed to login!'
+            message = 'Failed to login!!'
+
     return render_template('login.html', message=message)
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    message = ''
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        try:
+            save_user(username, email, password)
+            return redirect(url_for('login'))
+        except DuplicateKeyError:
+            message = "User already exists!!!"
+    return render_template(('signup.html'), message=message)
 
 
 @app.route("/logout/")
@@ -41,12 +61,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
-@app.route("/sign/")
-def sign():
-    return render_template('sign.html')
-
 
 @app.route('/chat')
 def chat():
@@ -65,7 +79,6 @@ def handle_send_message_event(data):
                                                                     data['room'],
                                                                     data['message']))
     socketio.emit('receive_message', data, room=data['room'])
-
 
 @socketio.on('join_room')
 def handle_join_room_event(data):

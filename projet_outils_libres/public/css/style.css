@@ -78,19 +78,10 @@ body{
 }
 /*styling of chat panel body*/
 
-#panel1{
-  height: 455px;
-  overflow-y: auto;
-}
-#panel2{
-  height: 380px;
-  overflow-y: auto;
-}
 
-#loading,
-#noChat,
-#chatForm{
-  display: none;
+#panel2{
+  height: 360px;
+  overflow-y: auto;
 }
 
 .input-box-send{
