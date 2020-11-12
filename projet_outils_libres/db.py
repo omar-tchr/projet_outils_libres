@@ -13,7 +13,7 @@ def save_user(username, email, password):
     password_hash = generate_password_hash(password)
     users_collection.insert_one({'_id': username, 'email': email, 'password': password_hash})
 
-    save_user("_id", "juba@g.com", "omar")
+
 
 
 def get_user(username):
